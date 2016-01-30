@@ -1,5 +1,4 @@
-from __future__ import unicode_literals
-
+import base64
 import httplib2
 import os
 import time
@@ -63,57 +62,56 @@ def refresh():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
 
-    results = 5
+    result = service.users().labels().list(
+        userId='me').execute()
+    for label in result['labels']:
+        if label['name'] == 'chase':
+            label_id = label['id']
+
     result = service.users().messages().list(
-        userId='me', maxResults=results).execute()
-    for m in range(results):
-        msgid = result['messages'][m]['id']
-        msgresult = service.users().messages().get(
-            userId='me', id=msgid).execute()
-
-        date = None
-        subject = None
-        snippet = msgresult['snippet']
-        for header in msgresult['payload']['headers']:
-            if header['name'] == 'From':
-                sender = header['value']
-            elif header['name'] == 'Subject':
-                subject = header['value']
-            elif header['name'] == 'Date':
-                date = header['value']
-
-        if re.match(r'card', sender, re.I):
-            print(date)
-            print(sender)
-            print(subject)
-            print(snippet)
-            print()
-            break
+        userId='me', labelIds=[label_id]).execute()
+    tweet = None
+    for message in result['messages']:
+        msg = service.users().messages().get(
+            userId='me', id=message['id']).execute()
+        data = msg['payload']['body']['data']
+        s = base64.urlsafe_b64decode(data).decode('utf-8')
+        print(s)
+        matches = re.search(
+            r'A charge of \(\$USD\) ([0-9]+\.[0-9]+) at (.*)(\.\.\.)? '
+            r'has been',
+            s)
+        print('!')
+        amount = matches.group(1)
+        place = matches.group(2)
+        tweet = '${} at {}'.format(amount, place)
 
     tc = TwitterConnect()
 
     timeline = tc.api.GetUserTimeline(local_settings.TWITTER_USER)
     recent_tweets = []
     for i in range(5):
-        status = timeline[i]
-        recent_tweets.append(status.text)
+        # status = timeline[i]
+        pass
+        # recent_tweets.append(status.text)
 
     remaining = tc.api.GetRateLimitStatus()[
         'resources']['favorites']['/favorites/list']['remaining']
     favs = []
     if remaining > 7:
-        favs = tc.api.GetFavorites(count=7)
-    timeline = tc.api.GetHomeTimeline()
-    for i in range(2):
+        # favs = tc.api.GetFavorites(count=7)
+        favs = []
+    # timeline = tc.api.GetHomeTimeline()
+    for i in range(3):
         status = timeline[i]
         if favs and (random.choice(range(10)) >= 2) and \
            (status.text not in [f.text for f in favs]):
             print('faving: %s' % status.text)
-            tc.api.CreateFavorite(status=status)
+            # tc.api.CreateFavorite(status=status)
 
-    if snippet not in recent_tweets:
-        print(snippet)
-        # tc.tweet(snippet)
+    if tweet and tweet not in recent_tweets:
+        print('tweeting %s' % tweet)
+        tc.tweet(tweet)
 
 
 def main():
