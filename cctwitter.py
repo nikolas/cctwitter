@@ -79,7 +79,7 @@ def refresh():
         print(s)
         matches = re.search(
             r'A charge of \(\$USD\) ([0-9]+\.[0-9]+) at (.*)(\.\.\.)? '
-            r'has been',
+            r'has been authorized',
             s)
         print('!')
         amount = matches.group(1)
