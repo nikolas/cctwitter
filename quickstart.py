@@ -4,6 +4,7 @@ import httplib2
 import os
 import time
 import re
+import random
 
 from apiclient import discovery
 import oauth2client
@@ -90,10 +91,25 @@ def refresh():
             break
 
     tc = TwitterConnect()
+
     timeline = tc.api.GetUserTimeline(local_settings.TWITTER_USER)
     recent_tweets = []
-    for i in range(10):
-        recent_tweets.append(timeline[i].text)
+    for i in range(5):
+        status = timeline[i]
+        recent_tweets.append(status.text)
+
+    remaining = tc.api.GetRateLimitStatus()[
+        'resources']['favorites']['/favorites/list']['remaining']
+    favs = []
+    if remaining > 7:
+        favs = tc.api.GetFavorites(count=7)
+    timeline = tc.api.GetHomeTimeline()
+    for i in range(2):
+        status = timeline[i]
+        if favs and (random.choice(range(10)) >= 2) and \
+           (status.text not in [f.text for f in favs]):
+            print('faving: %s' % status.text)
+            tc.api.CreateFavorite(status=status)
 
     if snippet not in recent_tweets:
         print(snippet)
@@ -103,7 +119,7 @@ def refresh():
 def main():
     while True:
         refresh()
-        time.sleep(60 * 5)
+        time.sleep(60 * 8)
 
 
 if __name__ == '__main__':
