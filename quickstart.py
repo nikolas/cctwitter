@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import httplib2
 import os
+import time
+import re
 
 from apiclient import discovery
 import oauth2client
@@ -12,6 +14,9 @@ try:
     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
 except ImportError:
     flags = None
+
+from tweet import TwitterConnect
+import local_settings
 
 SCOPES = 'https://www.googleapis.com/auth/gmail.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -47,7 +52,7 @@ def get_credentials():
     return credentials
 
 
-def main():
+def refresh():
     """Shows basic usage of the Gmail API.
 
     Creates a Gmail API service object and outputs a list of label names
@@ -57,17 +62,48 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
 
+    results = 5
     result = service.users().messages().list(
-        userId='me', maxResults=1).execute()
-    msgid = result['messages'][0]['id']
-    result = service.users().messages().get(
-        userId='me', id=msgid).execute()
-    for header in result['payload']['headers']:
-        if header['name'] == 'Subject':
-            subject = header['value']
+        userId='me', maxResults=results).execute()
+    for m in range(results):
+        msgid = result['messages'][m]['id']
+        msgresult = service.users().messages().get(
+            userId='me', id=msgid).execute()
+
+        date = None
+        subject = None
+        snippet = msgresult['snippet']
+        for header in msgresult['payload']['headers']:
+            if header['name'] == 'From':
+                sender = header['value']
+            elif header['name'] == 'Subject':
+                subject = header['value']
+            elif header['name'] == 'Date':
+                date = header['value']
+
+        if re.match(r'card', sender, re.I):
+            print(date)
+            print(sender)
+            print(subject)
+            print(snippet)
+            print()
             break
 
-    print(subject)
+    tc = TwitterConnect()
+    timeline = tc.api.GetUserTimeline(local_settings.TWITTER_USER)
+    recent_tweets = []
+    for i in range(10):
+        recent_tweets.append(timeline[i].text)
+
+    if snippet not in recent_tweets:
+        print(snippet)
+        # tc.tweet(snippet)
+
+
+def main():
+    while True:
+        refresh()
+        time.sleep(60 * 5)
 
 
 if __name__ == '__main__':
