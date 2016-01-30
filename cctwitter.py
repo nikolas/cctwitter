@@ -76,12 +76,10 @@ def refresh():
             userId='me', id=message['id']).execute()
         data = msg['payload']['body']['data']
         s = base64.urlsafe_b64decode(data).decode('utf-8')
-        print(s)
         matches = re.search(
             r'A charge of \(\$USD\) ([0-9]+\.[0-9]+) at (.*)(\.\.\.)? '
             r'has been authorized',
             s)
-        print('!')
         amount = matches.group(1)
         place = matches.group(2)
         tweet = '${} at {}'.format(amount, place)
@@ -91,9 +89,8 @@ def refresh():
     timeline = tc.api.GetUserTimeline(local_settings.TWITTER_USER)
     recent_tweets = []
     for i in range(5):
-        # status = timeline[i]
-        pass
-        # recent_tweets.append(status.text)
+        status = timeline[i]
+        recent_tweets.append(status.text)
 
     remaining = tc.api.GetRateLimitStatus()[
         'resources']['favorites']['/favorites/list']['remaining']
@@ -110,7 +107,6 @@ def refresh():
             # tc.api.CreateFavorite(status=status)
 
     if tweet and tweet not in recent_tweets:
-        print('tweeting %s' % tweet)
         tc.tweet(tweet)
 
 
