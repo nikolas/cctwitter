@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import httplib2
 import os
 import time
@@ -78,6 +79,8 @@ def refresh():
         amount = matches.group(1)
         place = matches.group(2)
         tweet = '${} at {}'.format(amount, place)
+        print(tweet)
+        break
 
     tc = TwitterConnect()
 
@@ -107,6 +110,7 @@ def refresh():
 
 def main():
     while True:
+        print(datetime.now())
         refresh()
         time.sleep(60 * 8)
 
