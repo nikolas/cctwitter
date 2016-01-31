@@ -9,6 +9,7 @@ import random
 from apiclient import discovery
 import oauth2client
 from oauth2client import client, tools
+from twitter.error import TwitterError
 
 try:
     import argparse
@@ -102,7 +103,10 @@ def refresh():
         if favs and (random.choice(range(10)) >= 2) and \
            (status.text not in [f.text for f in favs]):
             print('faving: %s' % status.text)
-            tc.api.CreateFavorite(status=status)
+            try:
+                tc.api.CreateFavorite(status=status)
+            except TwitterError:
+                pass
 
     if tweet and tweet not in recent_tweets:
         tc.tweet(tweet)
