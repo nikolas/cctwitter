@@ -100,7 +100,8 @@ def refresh():
     timeline = tc.api.GetHomeTimeline()
     for i in range(3):
         status = timeline[i]
-        if favs and (random.choice(range(10)) >= 2) and \
+        if status.user.name != local_settings.TWITTER_USER and \
+           favs and (random.choice(range(10)) >= 2) and \
            (status.text not in [f.text for f in favs]):
             print('faving: %s' % status.text)
             try:
