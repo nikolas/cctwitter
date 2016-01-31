@@ -94,16 +94,15 @@ def refresh():
     remaining = tc.api.GetRateLimitStatus()[
         'resources']['favorites']['/favorites/list']['remaining']
     favs = []
-    if remaining > 7:
-        # favs = tc.api.GetFavorites(count=7)
-        favs = []
-    # timeline = tc.api.GetHomeTimeline()
+    if remaining > 5:
+        favs = tc.api.GetFavorites(count=5)
+    timeline = tc.api.GetHomeTimeline()
     for i in range(3):
         status = timeline[i]
         if favs and (random.choice(range(10)) >= 2) and \
            (status.text not in [f.text for f in favs]):
             print('faving: %s' % status.text)
-            # tc.api.CreateFavorite(status=status)
+            tc.api.CreateFavorite(status=status)
 
     if tweet and tweet not in recent_tweets:
         tc.tweet(tweet)
@@ -113,7 +112,7 @@ def main():
     while True:
         print(datetime.now())
         refresh()
-        time.sleep(60 * 8)
+        time.sleep(60 * 5)
 
 
 if __name__ == '__main__':
