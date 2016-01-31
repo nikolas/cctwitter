@@ -78,6 +78,7 @@ def refresh():
             s)
         amount = matches.group(1)
         place = matches.group(2)
+        place = re.sub(r'\.\.\.$', '', place)
         tweet = '${} at {}'.format(amount, place)
         print(tweet)
         break
