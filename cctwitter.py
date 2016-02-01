@@ -98,7 +98,7 @@ def refresh():
     if remaining > 5:
         favs = tc.api.GetFavorites(count=5)
     timeline = tc.api.GetHomeTimeline()
-    for i in range(3):
+    for i in range(4):
         status = timeline[i]
         if status.user.name != local_settings.TWITTER_USER and \
            favs and (random.choice(range(10)) >= 2) and \
