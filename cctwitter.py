@@ -4,7 +4,6 @@ import httplib2
 import os
 import time
 import re
-import random
 
 from apiclient import discovery
 import oauth2client
@@ -101,8 +100,7 @@ def refresh():
     for i in range(4):
         status = timeline[i]
         if status.user.name != local_settings.TWITTER_USER and \
-           favs and (random.choice(range(10)) >= 2) and \
-           (status.text not in [f.text for f in favs]):
+           favs and (status.text not in [f.text for f in favs]):
             print('faving: %s' % status.text)
             try:
                 tc.api.CreateFavorite(status=status)
