@@ -108,7 +108,10 @@ def refresh():
                 pass
 
     if tweet and tweet not in recent_tweets:
-        tc.tweet(tweet)
+        try:
+            tc.tweet(tweet)
+        except TwitterError:
+            pass
 
 
 def main():
