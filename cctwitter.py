@@ -99,15 +99,16 @@ def refresh():
     timeline = tc.api.GetHomeTimeline()
     for i in range(4):
         status = timeline[i]
-        if status.user.name != local_settings.TWITTER_USER and \
+        if status.user.screen_name != local_settings.TWITTER_USER and \
            favs and (status.text not in [f.text for f in favs]):
-            print('faving: %s' % status.text)
             try:
                 tc.api.CreateFavorite(status=status)
             except TwitterError:
                 pass
 
     if tweet and tweet not in recent_tweets:
+        print('recent tweets')
+        print(recent_tweets)
         try:
             tc.tweet(tweet)
         except TwitterError:
@@ -118,7 +119,7 @@ def main():
     while True:
         print(datetime.now())
         refresh()
-        time.sleep(60 * 5)
+        time.sleep(60 * 10)
 
 
 if __name__ == '__main__':
