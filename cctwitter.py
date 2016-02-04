@@ -53,6 +53,9 @@ def get_credentials():
     return credentials
 
 
+tweet_cache = []
+
+
 def refresh():
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
@@ -87,7 +90,7 @@ def refresh():
 
     timeline = tc.api.GetUserTimeline(local_settings.TWITTER_USER)
     recent_tweets = []
-    for i in range(5):
+    for i in range(10):
         status = timeline[i]
         recent_tweets.append(status.text)
 
@@ -106,9 +109,10 @@ def refresh():
             except TwitterError:
                 pass
 
-    if tweet and tweet not in recent_tweets:
+    if tweet and (tweet not in recent_tweets) and (tweet not in tweet_cache):
         print('recent tweets')
         print(recent_tweets)
+        tweet_cache.append(tweet)
         try:
             tc.tweet(tweet)
         except TwitterError:
