@@ -100,7 +100,7 @@ def refresh():
     if remaining > 5:
         favs = tc.api.GetFavorites(count=5)
     timeline = tc.api.GetHomeTimeline()
-    for i in range(4):
+    for i in range(2):
         status = timeline[i]
         if status.user.screen_name != local_settings.TWITTER_USER and \
            favs and (status.text not in [f.text for f in favs]):
@@ -123,7 +123,7 @@ def main():
     while True:
         print(datetime.now())
         refresh()
-        time.sleep(60 * 10)
+        time.sleep(60 * 15)
 
 
 if __name__ == '__main__':
