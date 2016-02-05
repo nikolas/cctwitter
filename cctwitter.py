@@ -103,6 +103,7 @@ def refresh():
     for i in range(2):
         status = timeline[i]
         if status.user.screen_name != local_settings.TWITTER_USER and \
+           status.user.screen_name != 'freedrull' and \
            favs and (status.text not in [f.text for f in favs]):
             try:
                 tc.api.CreateFavorite(status=status)
