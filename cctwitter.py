@@ -94,23 +94,6 @@ def refresh():
         status = timeline[i]
         recent_tweets.append(status.text)
 
-    # remaining = tc.api.GetRateLimitStatus()[
-    #     'resources']['favorites']['/favorites/list']['remaining']
-    # favs = []
-    # if remaining > 5:
-    #     favs = tc.api.GetFavorites(count=5)
-    # timeline = tc.api.GetHomeTimeline()
-    # for i in range(2):
-    #     status = timeline[i]
-    #     if status.user.screen_name != local_settings.TWITTER_USER and \
-    #        status.user.screen_name != 'freedrull' and \
-    #        status.user.screen_name != 'datafruits' and \
-    #        favs and (status.text not in [f.text for f in favs]):
-    #         try:
-    #             tc.api.CreateFavorite(status=status)
-    #         except TwitterError:
-    #             pass
-
     if tweet and (tweet not in recent_tweets) and (tweet not in tweet_cache):
         print('recent tweets')
         print(recent_tweets)
