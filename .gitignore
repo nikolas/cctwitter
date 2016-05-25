@@ -1,4 +1,5 @@
 ve
 venv
 local_settings.py
+client_secret.json
 __pycache__
