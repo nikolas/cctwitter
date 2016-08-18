@@ -83,7 +83,7 @@ def refresh():
         place = matches.group(2)
         place = re.sub(r'\.\.\.$', '', place)
         tweet = '${} at @{}'.format(amount, place)
-        if tweet == '$2.49 at @DD/BR  #332445':
+        if '$2.49 at @DD/BR' in tweet:
             tweet = 'Just picked up my morning coffee at @DunkinDonuts'
         print(tweet)
         break
