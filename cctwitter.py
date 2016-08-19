@@ -56,6 +56,14 @@ def get_credentials():
 tweet_cache = []
 
 
+def transform_tweet(tweet):
+    """Take a tweet, and make it something else."""
+    if '$2.49 at @DD/BR' in tweet:
+        tweet = '$2.49 at @DunkinDonuts  ' + \
+                'Damn I probably just picked up my morning coffee.'
+    return tweet
+
+
 def refresh():
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
@@ -83,8 +91,7 @@ def refresh():
         place = matches.group(2)
         place = re.sub(r'\.\.\.$', '', place)
         tweet = '${} at @{}'.format(amount, place)
-        if '$2.49 at @DD/BR' in tweet:
-            tweet = '$2.49 at @DunkinDonuts  Damn I probably just picked up my morning coffee.'
+        tweet = transform_tweet(tweet)
         print(tweet)
         break
 
