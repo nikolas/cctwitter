@@ -59,7 +59,7 @@ tweet_cache = []
 def transform_tweet(tweet):
     """Take a tweet, and make it something else."""
     if '$2.49 at @DD/BR' in tweet:
-        tweet = '$2.49 at @DunkinDonuts  ' + \
+        tweet = '$2.49 at @DunkinDonuts. ' + \
                 'Damn I probably just picked up my morning coffee.'
     return tweet
 
