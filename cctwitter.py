@@ -87,9 +87,18 @@ def refresh():
             r'A charge of \(\$USD\) ([0-9]+\.[0-9]+) at (.*)(\.\.\.)? '
             r'has been authorized',
             s)
-        amount = matches.group(1)
-        place = matches.group(2)
-        place = re.sub(r'\.\.\.$', '', place)
+        if matches:
+            amount = matches.group(1)
+            place = matches.group(2)
+            place = re.sub(r'\.\.\.$', '', place)
+        else:
+            matches = re.search(
+                r'A \$([0-9]+\.[0-9]+) debit card transaction (.*)(\.\.\.)? '
+                r'on',
+                s)
+            amount = matches.group(0)
+            place = matches.group(1)
+            place = re.sub(r'\.\.\.$', '', place)
         tweet = '${} at @{}'.format(amount, place)
         tweet = transform_tweet(tweet)
         print(tweet)
