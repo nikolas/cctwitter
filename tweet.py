@@ -1,4 +1,5 @@
 import twitter
+from twitter.error import TwitterError
 import local_settings
 
 
@@ -12,4 +13,7 @@ class TwitterConnect:
 
     def tweet(self, s):
         print('Tweeting: {}'.format(s))
-        self.api.PostUpdate(s)
+        try:
+            self.api.PostUpdate(s)
+        except TwitterError:
+            pass

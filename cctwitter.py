@@ -8,7 +8,7 @@ import re
 from apiclient import discovery
 import oauth2client
 from oauth2client import client, tools
-from twitter.error import TwitterError
+
 
 try:
     import argparse
@@ -64,6 +64,17 @@ def transform_tweet(tweet):
     return tweet
 
 
+def parse_debit_card_msg(s):
+    matches = re.search(
+        r'A \$([0-9]+\.[0-9]+) debit card transaction (.*)(\.\.\.)? '
+        r'on',
+        s)
+    amount = matches.group(0)
+    place = matches.group(1)
+    place = re.sub(r'\.\.\.$', '', place)
+    return amount, place
+
+
 def refresh():
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
@@ -92,13 +103,7 @@ def refresh():
             place = matches.group(2)
             place = re.sub(r'\.\.\.$', '', place)
         else:
-            matches = re.search(
-                r'A \$([0-9]+\.[0-9]+) debit card transaction (.*)(\.\.\.)? '
-                r'on',
-                s)
-            amount = matches.group(0)
-            place = matches.group(1)
-            place = re.sub(r'\.\.\.$', '', place)
+            amount, place = parse_debit_card_msg(s)
         tweet = '${} at @{}'.format(amount, place)
         tweet = transform_tweet(tweet)
         print(tweet)
@@ -116,10 +121,7 @@ def refresh():
         print('recent tweets')
         print(recent_tweets)
         tweet_cache.append(tweet)
-        try:
-            tc.tweet(tweet)
-        except TwitterError:
-            pass
+        tc.tweet(tweet)
 
 
 def main():
