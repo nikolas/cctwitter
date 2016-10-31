@@ -103,7 +103,9 @@ def refresh():
             place = matches.group(2)
             place = re.sub(r'\.\.\.$', '', place)
         else:
-            amount, place = parse_debit_card_msg(s)
+            # TODO
+            # amount, place = parse_debit_card_msg(s)
+            break
         tweet = '${} at @{}'.format(amount, place)
         tweet = transform_tweet(tweet)
         print(tweet)
