@@ -1,2 +1,2 @@
-google-api-python-client==1.5.1
+google-api-python-client==1.6.2
 python-twitter==3.1
